@@ -1,4 +1,4 @@
-const { toLocatorString } = require('../locators');
+const { toLocatorString, getShadowParts } = require('../locators');
 
 const GROUPS = ['inputs','buttons','links','selects','textareas'];
 const LABELS = { inputs:'Inputs', buttons:'Buttons', links:'Links', selects:'Selects', textareas:'Textareas' };
@@ -11,6 +11,9 @@ function generate(elements, className) {
       if (el.isListItem) {
         const loc = toLocatorString(el.locatorData, 'cypress', 'js');
         lines.push(`  ${el.name}(n) { return ${loc}; }`);
+      } else if (el.isShadowElement) {
+        const { host, innerCss } = getShadowParts(el.locatorData);
+        lines.push(`  ${el.name}() { return cy.get('${host}').shadow().find('${innerCss}'); }`);
       } else {
         const loc = toLocatorString(el.locatorData, 'cypress', 'js');
         lines.push(`  ${el.name}() { return ${loc}; }`);

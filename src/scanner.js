@@ -28,23 +28,55 @@ function getListContext(el) {
   return null;
 }
 
-function scanPage(doc, language = 'ts') {
+function getImmediateShadowHost(el) {
+  const root = el.getRootNode();
+  if (root && root.nodeType === 11) return root.host;
+  return null;
+}
+
+function querySelectorAllDeep(selector, root) {
+  const results = [];
+  function walk(node) {
+    try {
+      results.push(...Array.from(node.querySelectorAll(selector)));
+      for (const el of Array.from(node.querySelectorAll('*'))) {
+        if (el.shadowRoot) walk(el.shadowRoot);
+      }
+    } catch (e) {}
+  }
+  walk(root);
+  return results;
+}
+
+function isSalesforcePage(doc) {
+  return !!(
+    doc.querySelector('lightning-input, lightning-button, lightning-combobox, lightning-textarea') ||
+    doc.querySelector('[data-component-id]') ||
+    doc.querySelector('.slds-scope')
+  );
+}
+
+function scanPage(doc, language = 'ts', deepScan = false) {
   const seen = {};
-  const seenListLocators = new Set(); // key: container::locatorValue
+  const seenListLocators = new Set();
   const result = { inputs: [], buttons: [], links: [], selects: [], textareas: [] };
 
+  const queryFn = deepScan
+    ? (selector) => querySelectorAllDeep(selector, doc)
+    : (selector) => Array.from(doc.querySelectorAll(selector));
+
   for (const { selector, type, group } of QUERIES) {
-    for (const el of Array.from(doc.querySelectorAll(selector))) {
+    for (const el of queryFn(selector)) {
       const locatorData = getLocatorData(el, type);
       if (!locatorData) continue;
 
+      const shadowHost = deepScan ? getImmediateShadowHost(el) : null;
       const listContext = getListContext(el);
 
       if (listContext) {
         const dedupeKey = `${listContext.container}::${locatorData.value}`;
         if (seenListLocators.has(dedupeKey)) continue;
         seenListLocators.add(dedupeKey);
-
         const prefixedRaw = listContext.prefix + '-' + locatorData.rawName;
         const name = toElementName(prefixedRaw, type, seen, language);
         result[group].push({
@@ -52,6 +84,14 @@ function scanPage(doc, language = 'ts') {
           locatorData: { ...locatorData, container: listContext.container },
           type,
           isListItem: true,
+        });
+      } else if (shadowHost) {
+        const name = toElementName(locatorData.rawName, type, seen, language);
+        result[group].push({
+          name,
+          locatorData: { ...locatorData, shadowHost: shadowHost.tagName.toLowerCase() },
+          type,
+          isShadowElement: true,
         });
       } else {
         const name = toElementName(locatorData.rawName, type, seen, language);
@@ -63,4 +103,4 @@ function scanPage(doc, language = 'ts') {
   return result;
 }
 
-module.exports = { scanPage, getListContext };
+module.exports = { scanPage, getListContext, getImmediateShadowHost, querySelectorAllDeep, isSalesforcePage };

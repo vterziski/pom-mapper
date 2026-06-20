@@ -1,4 +1,4 @@
-const { scanPage, getListContext } = require('../src/scanner');
+const { scanPage, getListContext, isSalesforcePage, querySelectorAllDeep } = require('../src/scanner');
 
 function buildDOM(html) {
   document.body.innerHTML = html;
@@ -118,6 +118,35 @@ describe('scanPage', () => {
     const result = scanPage(document);
     expect(result.buttons[0].isListItem).toBeUndefined();
     expect(result.buttons[0].locatorData.container).toBeUndefined();
+  });
+});
+
+describe('isSalesforcePage', () => {
+  afterEach(() => { document.body.innerHTML = ''; });
+
+  test('detects lightning-input', () => {
+    document.body.innerHTML = '<lightning-input label="Name"></lightning-input>';
+    expect(isSalesforcePage(document)).toBe(true);
+  });
+
+  test('detects slds-scope', () => {
+    document.body.innerHTML = '<div class="slds-scope"><button>Go</button></div>';
+    expect(isSalesforcePage(document)).toBe(true);
+  });
+
+  test('returns false for plain page', () => {
+    document.body.innerHTML = '<button>Click</button>';
+    expect(isSalesforcePage(document)).toBe(false);
+  });
+});
+
+describe('querySelectorAllDeep', () => {
+  afterEach(() => { document.body.innerHTML = ''; });
+
+  test('finds elements in regular DOM', () => {
+    document.body.innerHTML = '<button data-testid="btn">Click</button>';
+    const results = querySelectorAllDeep('button', document);
+    expect(results.length).toBeGreaterThanOrEqual(1);
   });
 });
 

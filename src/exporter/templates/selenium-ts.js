@@ -1,4 +1,4 @@
-const { toLocatorString } = require('../locators');
+const { toLocatorString, getShadowParts } = require('../locators');
 
 const GROUPS = ['inputs','buttons','links','selects','textareas'];
 const LABELS = { inputs:'Inputs', buttons:'Buttons', links:'Links', selects:'Selects', textareas:'Textareas' };
@@ -16,6 +16,9 @@ function generate(elements, className) {
       if (el.isListItem) {
         const loc = toLocatorString(el.locatorData, 'selenium', 'ts').replace(/^driver\./, 'this.driver.');
         lines.push(`  ${el.name} = (n: number) => ${loc};`);
+      } else if (el.isShadowElement) {
+        const { host, innerCss } = getShadowParts(el.locatorData);
+        lines.push(`  ${el.name} = () => this.driver.findElement(By.css('${host}')).getShadowRoot().then(r => r.findElement(By.css('${innerCss}')));`);
       } else {
         const loc = toLocatorString(el.locatorData, 'selenium', 'ts').replace(/^driver\./, 'this.driver.');
         lines.push(`  ${el.name} = () => ${loc};`);

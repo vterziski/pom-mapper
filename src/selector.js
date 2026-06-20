@@ -19,6 +19,9 @@ function getLocatorData(el, type) {
   const name = el.getAttribute('name');
   if (name) return { strategy: 'name', value: name, rawName: name };
 
+  const title = el.getAttribute('title');
+  if (title) return { strategy: 'title', value: title, rawName: title };
+
   const text = el.textContent.trim();
   if (text) return { strategy: 'role', role: ROLE_MAP[type] || type, value: text, rawName: text };
 

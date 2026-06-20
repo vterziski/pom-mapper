@@ -64,6 +64,24 @@ describe('getLocatorData', () => {
     });
   });
 
+  test('falls back to title attribute', () => {
+    const el = makeEl('button', { title: 'Close dialog' }, '');
+    expect(getLocatorData(el, 'button')).toEqual({
+      strategy: 'title',
+      value: 'Close dialog',
+      rawName: 'Close dialog',
+    });
+  });
+
+  test('title is lower priority than name', () => {
+    const el = makeEl('input', { name: 'email', title: 'Enter email' });
+    expect(getLocatorData(el, 'input')).toEqual({
+      strategy: 'name',
+      value: 'email',
+      rawName: 'email',
+    });
+  });
+
   test('returns null when no usable selector exists', () => {
     const el = makeEl('button', {}, '');
     expect(getLocatorData(el, 'button')).toBeNull();

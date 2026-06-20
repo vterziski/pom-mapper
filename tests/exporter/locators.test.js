@@ -1,4 +1,4 @@
-const { toLocatorString } = require('../../src/exporter/locators');
+const { toLocatorString, getShadowParts } = require('../../src/exporter/locators');
 
 const testidData  = { strategy: 'testid', value: 'login-btn' };
 const labelData   = { strategy: 'label',  value: 'Email' };
@@ -118,5 +118,45 @@ describe('Error handling', () => {
   });
   test('throws on unsupported framework', () => {
     expect(() => toLocatorString(testidData, 'unknown', 'ts')).toThrow('Unsupported combination');
+  });
+});
+
+describe('title strategy', () => {
+  const titleData = { strategy: 'title', value: 'Close dialog' };
+
+  test('playwright → getByTitle', () => {
+    expect(toLocatorString(titleData, 'playwright', 'ts')).toBe("page.getByTitle('Close dialog')");
+  });
+  test('playwright python → get_by_title', () => {
+    expect(toLocatorString(titleData, 'playwright', 'python')).toBe('page.get_by_title("Close dialog")');
+  });
+  test('cypress → cy.get [title]', () => {
+    expect(toLocatorString(titleData, 'cypress', 'ts')).toBe("cy.get('[title=\"Close dialog\"]')");
+  });
+  test('selenium ts → By.css [title]', () => {
+    expect(toLocatorString(titleData, 'selenium', 'ts')).toBe("driver.findElement(By.css('[title=\"Close dialog\"]'))");
+  });
+  test('selenium python → By.CSS_SELECTOR [title]', () => {
+    expect(toLocatorString(titleData, 'selenium', 'python')).toBe("driver.find_element(By.CSS_SELECTOR, '[title=\"Close dialog\"]')");
+  });
+});
+
+describe('getShadowParts', () => {
+  test('returns host and innerCss for testid strategy', () => {
+    const data = { strategy: 'testid', value: 'save-btn', shadowHost: 'lightning-button' };
+    const parts = getShadowParts(data);
+    expect(parts).toEqual({ host: 'lightning-button', innerCss: '[data-testid="save-btn"]' });
+  });
+
+  test('returns host and innerCss for aria-label strategy', () => {
+    const data = { strategy: 'label', value: 'Submit', shadowHost: 'c-my-form' };
+    const parts = getShadowParts(data);
+    expect(parts).toEqual({ host: 'c-my-form', innerCss: '[aria-label="Submit"]' });
+  });
+
+  test('returns host and innerCss for title strategy', () => {
+    const data = { strategy: 'title', value: 'Close', shadowHost: 'c-modal' };
+    const parts = getShadowParts(data);
+    expect(parts).toEqual({ host: 'c-modal', innerCss: '[title="Close"]' });
   });
 });

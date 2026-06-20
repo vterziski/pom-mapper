@@ -116,6 +116,7 @@ let scanCount = 0;
 let selectedFramework = 'playwright';
 let selectedLanguage = 'ts';
 let previousTab = null;
+let deepScan = false;
 
 // ---- DOM refs ----
 const $ = (id) => document.getElementById(id);
@@ -233,11 +234,16 @@ function renderResults() {
   $('export-label').textContent = `Exporting as: ${selectedFramework.charAt(0).toUpperCase() + selectedFramework.slice(1)} · ${selectedLanguage.toUpperCase()}`;
 }
 
+// ---- Deep scan toggle ----
+$('deep-scan-toggle').addEventListener('change', (e) => {
+  deepScan = e.target.checked;
+});
+
 // ---- Scan ----
 function runScan() {
   chrome.tabs.query({ active: true, currentWindow: true }, ([tab]) => {
     chrome.scripting.executeScript({ target: { tabId: tab.id }, files: ['content/content.js'] }, () => {
-      chrome.tabs.sendMessage(tab.id, { action: 'SCAN_PAGE', language: selectedLanguage }, (response) => {
+      chrome.tabs.sendMessage(tab.id, { action: 'SCAN_PAGE', language: selectedLanguage, deepScan }, (response) => {
         if (!response || !response.success) return;
         scanCount += 1;
         accumulated = mergeElements(accumulated, response.data);
@@ -356,4 +362,14 @@ chrome.tabs.query({ active: true, currentWindow: true }, async ([tab]) => {
   const { apiKey: key } = await getStorageData(['apiKey']);
   if (key) $('btn-heal').classList.remove('hidden');
   await updateUsageBar();
+
+  chrome.scripting.executeScript({ target: { tabId: tab.id }, files: ['content/content.js'] }, () => {
+    chrome.tabs.sendMessage(tab.id, { action: 'DETECT_SALESFORCE' }, (response) => {
+      if (response && response.isSalesforce) {
+        $('sf-badge').classList.remove('hidden');
+        $('deep-scan-toggle').checked = true;
+        deepScan = true;
+      }
+    });
+  });
 });

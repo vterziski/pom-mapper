@@ -43,6 +43,8 @@ function getLocatorData(el, type) {
   if (id) return { strategy: 'id', value: id, rawName: id };
   const name = el.getAttribute('name');
   if (name) return { strategy: 'name', value: name, rawName: name };
+  const title = el.getAttribute('title');
+  if (title) return { strategy: 'title', value: title, rawName: title };
   const text = el.textContent.trim();
   if (text) return { strategy: 'role', role: ROLE_MAP[type] || type, value: text, rawName: text };
   return null;
@@ -65,16 +67,50 @@ function getListContext(el) {
   return null;
 }
 
-function scanPage(language) {
+function getImmediateShadowHost(el) {
+  const root = el.getRootNode();
+  if (root && root.nodeType === 11) return root.host;
+  return null;
+}
+
+function querySelectorAllDeep(selector, root) {
+  const results = [];
+  function walk(node) {
+    try {
+      results.push(...Array.from(node.querySelectorAll(selector)));
+      for (const el of Array.from(node.querySelectorAll('*'))) {
+        if (el.shadowRoot) walk(el.shadowRoot);
+      }
+    } catch (e) {}
+  }
+  walk(root);
+  return results;
+}
+
+function isSalesforcePage(doc) {
+  return !!(
+    doc.querySelector('lightning-input, lightning-button, lightning-combobox, lightning-textarea') ||
+    doc.querySelector('[data-component-id]') ||
+    doc.querySelector('.slds-scope')
+  );
+}
+
+function scanPage(language, deepScan) {
   const seen = {};
   const seenListLocators = new Set();
   const result = { inputs: [], buttons: [], links: [], selects: [], textareas: [] };
+  const queryFn = deepScan
+    ? (selector) => querySelectorAllDeep(selector, document)
+    : (selector) => Array.from(document.querySelectorAll(selector));
+
   for (const { selector, type, group } of QUERIES) {
-    for (const el of Array.from(document.querySelectorAll(selector))) {
+    for (const el of queryFn(selector)) {
       const locatorData = getLocatorData(el, type);
       if (!locatorData) continue;
 
+      const host = getImmediateShadowHost(el);
       const listContext = getListContext(el);
+
       if (listContext) {
         const dedupeKey = `${listContext.container}::${locatorData.value}`;
         if (seenListLocators.has(dedupeKey)) continue;
@@ -87,6 +123,14 @@ function scanPage(language) {
           type,
           isListItem: true,
         });
+      } else if (host) {
+        const name = toElementName(locatorData.rawName, type, seen, language);
+        result[group].push({
+          name,
+          locatorData: { ...locatorData, shadowHost: host.tagName.toLowerCase() },
+          type,
+          isShadowElement: true,
+        });
       } else {
         const name = toElementName(locatorData.rawName, type, seen, language);
         result[group].push({ name, locatorData, type });
@@ -98,7 +142,10 @@ function scanPage(language) {
 
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   if (message.action === 'SCAN_PAGE') {
-    sendResponse({ success: true, data: scanPage(message.language || 'ts') });
+    sendResponse({ success: true, data: scanPage(message.language || 'ts', message.deepScan || false) });
+  }
+  if (message.action === 'DETECT_SALESFORCE') {
+    sendResponse({ isSalesforce: isSalesforcePage(document) });
   }
   return true;
 });
