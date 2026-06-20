@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>POM Generator</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+
+  <!-- State: Ready -->
+  <div id="state-ready">
+    <div class="header">
+      <h1>POM Generator</h1>
+      <button id="btn-settings" class="icon-btn" title="Settings">⚙️</button>
+    </div>
+    <p id="page-url" class="url"></p>
+
+    <label for="class-name">Class Name</label>
+    <input type="text" id="class-name" placeholder="LoginPage" />
+
+    <label>Framework</label>
+    <div class="segmented" id="framework-selector">
+      <button class="seg-btn active" data-value="playwright">Playwright</button>
+      <button class="seg-btn" data-value="selenium">Selenium</button>
+      <button class="seg-btn" data-value="cypress">Cypress</button>
+    </div>
+
+    <label>Language</label>
+    <div class="segmented" id="language-selector">
+      <button class="seg-btn active" data-value="ts">TypeScript</button>
+      <button class="seg-btn" data-value="js">JavaScript</button>
+      <button class="seg-btn java-python" data-value="java">Java</button>
+      <button class="seg-btn java-python" data-value="python">Python</button>
+    </div>
+
+    <div class="tip">💡 Open modals, dropdowns, or dynamic panels before scanning.</div>
+
+    <div id="usage-bar" class="usage-bar hidden"></div>
+    <div id="upgrade-nudge" class="upgrade-nudge hidden">
+      ⚠️ Almost at your 20 export limit. <a href="#" id="upgrade-link">Upgrade for $4/mo</a>
+    </div>
+
+    <button id="btn-map" class="btn-primary">Map Page</button>
+  </div>
+
+  <!-- State: Results -->
+  <div id="state-results" class="hidden">
+    <div class="header">
+      <span id="scan-badge" class="badge"></span>
+      <div>
+        <button id="btn-rescan" class="btn-secondary">Scan Again</button>
+        <button id="btn-settings-results" class="icon-btn" title="Settings">⚙️</button>
+      </div>
+    </div>
+    <p id="export-label" class="export-label"></p>
+    <div id="elements-list"></div>
+    <div class="actions">
+      <button id="btn-heal" class="btn-secondary hidden">✨ Heal Locators</button>
+      <button id="btn-export" class="btn-primary">Export</button>
+    </div>
+  </div>
+
+  <!-- State: Empty -->
+  <div id="state-empty" class="hidden">
+    <p class="empty-msg">No testable elements found. Try navigating to a specific view or revealing dynamic content first.</p>
+    <button id="btn-retry" class="btn-secondary">Try Again</button>
+  </div>
+
+  <!-- State: Limit Reached -->
+  <div id="state-limit" class="hidden">
+    <p class="limit-msg">You've used all 20 free exports this month.</p>
+    <p class="limit-sub">Resets on the 1st of next month.</p>
+    <a id="upgrade-cta" href="#" class="btn-primary btn-upgrade">Upgrade — $4/month</a>
+    <button id="btn-limit-back" class="btn-secondary">Back</button>
+  </div>
+
+  <!-- State: Settings -->
+  <div id="state-settings" class="hidden">
+    <div class="header">
+      <h2>Settings</h2>
+      <button id="btn-settings-back" class="icon-btn">✕</button>
+    </div>
+
+    <div id="premium-status"></div>
+
+    <label for="api-key">OpenAI / Anthropic API Key</label>
+    <input type="password" id="api-key" placeholder="sk-... or sk-ant-..." />
+    <p class="hint">Used only for AI healing. Stored locally. Never shared.</p>
+
+    <label for="provider-select">AI Provider</label>
+    <select id="provider-select">
+      <option value="openai">OpenAI</option>
+      <option value="anthropic">Anthropic</option>
+    </select>
+
+    <label for="pomrc-upload">Custom Framework (.pomrc.json)</label>
+    <input type="file" id="pomrc-upload" accept=".json" />
+    <p class="hint">Enterprise: upload your framework template.</p>
+
+    <div id="settings-usage" class="usage-display"></div>
+
+    <button id="btn-save-settings" class="btn-primary">Save</button>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
