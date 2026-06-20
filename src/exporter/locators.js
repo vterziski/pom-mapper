@@ -1,4 +1,15 @@
+function toCssSelector(strategy, value, role) {
+  if (strategy === 'testid') return `[data-testid="${value}"]`;
+  if (strategy === 'label')  return `[aria-label="${value}"]`;
+  if (strategy === 'role')   return `[role="${role}"]`;
+  return '';
+}
+
 function toLocatorString(locatorData, framework, language) {
+  if (!locatorData || !locatorData.strategy || !locatorData.value) {
+    throw new Error(`Invalid locatorData: ${JSON.stringify(locatorData)}`);
+  }
+
   const { strategy, value, role } = locatorData;
   const q = (s) => (language === 'python' || language === 'java') ? `"${s}"` : `'${s}'`;
 
@@ -22,9 +33,7 @@ function toLocatorString(locatorData, framework, language) {
     if (language === 'python') {
       if (strategy === 'id')   return `driver.find_element(By.ID, ${q(value)})`;
       if (strategy === 'name') return `driver.find_element(By.NAME, ${q(value)})`;
-      const css = strategy === 'testid' ? `[data-testid="${value}"]`
-                : strategy === 'label'  ? `[aria-label="${value}"]`
-                : strategy === 'role'   ? `[role="${role}"]` : '';
+      const css = toCssSelector(strategy, value, role);
       return `driver.find_element(By.CSS_SELECTOR, '${css}')`;
     }
     if (language === 'java') {
@@ -38,9 +47,7 @@ function toLocatorString(locatorData, framework, language) {
     // TypeScript / JavaScript
     if (strategy === 'id')   return `driver.findElement(By.id(${q(value)}))`;
     if (strategy === 'name') return `driver.findElement(By.name(${q(value)}))`;
-    const css = strategy === 'testid' ? `[data-testid="${value}"]`
-              : strategy === 'label'  ? `[aria-label="${value}"]`
-              : strategy === 'role'   ? `[role="${role}"]` : '';
+    const css = toCssSelector(strategy, value, role);
     return `driver.findElement(By.css(${q(css)}))`;
   }
 
@@ -52,7 +59,7 @@ function toLocatorString(locatorData, framework, language) {
     if (strategy === 'role')   return `cy.get(${q('[role="' + role + '"]')})`;
   }
 
-  return '';
+  throw new Error(`Unsupported combination: framework="${framework}", language="${language}", strategy="${strategy}"`);
 }
 
 module.exports = { toLocatorString };

@@ -71,3 +71,21 @@ describe('Cypress', () => {
     expect(toLocatorString(nameData, 'cypress', 'ts')).toBe('cy.get(\'[name="password"]\')');
   });
 });
+
+describe('Error handling', () => {
+  test('throws on null locatorData', () => {
+    expect(() => toLocatorString(null, 'playwright', 'ts')).toThrow('Invalid locatorData');
+  });
+  test('throws on undefined locatorData', () => {
+    expect(() => toLocatorString(undefined, 'playwright', 'ts')).toThrow('Invalid locatorData');
+  });
+  test('throws on missing strategy', () => {
+    expect(() => toLocatorString({ value: 'test' }, 'playwright', 'ts')).toThrow('Invalid locatorData');
+  });
+  test('throws on missing value', () => {
+    expect(() => toLocatorString({ strategy: 'testid' }, 'playwright', 'ts')).toThrow('Invalid locatorData');
+  });
+  test('throws on unsupported framework', () => {
+    expect(() => toLocatorString(testidData, 'unknown', 'ts')).toThrow('Unsupported combination');
+  });
+});
