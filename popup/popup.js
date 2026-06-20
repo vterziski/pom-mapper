@@ -208,7 +208,14 @@ function renderResults() {
       const row = document.createElement('div');
       row.className = 'element-row';
       const preview = toLocatorString(el.locatorData, selectedFramework, selectedLanguage);
-      row.innerHTML = `<span class="element-name">${el.name}</span><span class="element-locator">${preview}</span>`;
+      const nameEl = document.createElement('span');
+      nameEl.className = 'element-name';
+      nameEl.textContent = el.name;
+      const locEl = document.createElement('span');
+      locEl.className = 'element-locator';
+      locEl.textContent = preview;
+      row.appendChild(nameEl);
+      row.appendChild(locEl);
       list.appendChild(row);
     }
   }
