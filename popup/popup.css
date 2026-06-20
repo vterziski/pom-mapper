@@ -177,7 +177,7 @@ select:focus { outline: none; border-color: #4a90e2; }
 
 .hint { font-size: 11px; color: #888; margin-top: 3px; }
 
-.hidden { display: none; }
+.hidden { display: none !important; }
 
 .sf-badge {
   display: inline-block;
