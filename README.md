@@ -25,7 +25,11 @@ Elements are identified using the following priority order:
 
 ## Installation
 
-This extension is not yet published to the Chrome Web Store. To install it locally:
+### Chrome Web Store
+
+Install directly from the [Chrome Web Store](https://chrome.google.com/webstore/detail/pom-mapper) — no setup required.
+
+### Manual install (developer mode)
 
 1. Clone or download this repository
 2. Open Chrome and navigate to `chrome://extensions`
