@@ -8,8 +8,13 @@ function generate(elements, className) {
   for (const group of GROUPS.filter(g => elements[g].length > 0)) {
     lines.push('', `  // ${LABELS[group]}`);
     for (const el of elements[group]) {
-      const loc = toLocatorString(el.locatorData, 'cypress', 'ts');
-      lines.push(`  ${el.name} = () => ${loc};`);
+      if (el.isListItem) {
+        const loc = toLocatorString(el.locatorData, 'cypress', 'ts');
+        lines.push(`  ${el.name} = (n: number) => ${loc};`);
+      } else {
+        const loc = toLocatorString(el.locatorData, 'cypress', 'ts');
+        lines.push(`  ${el.name} = () => ${loc};`);
+      }
     }
   }
   lines.push('}');

@@ -16,8 +16,15 @@ function generate(elements, className) {
   for (const group of GROUPS.filter(g => elements[g].length > 0)) {
     lines.push('', `  // ${LABELS[group]}`);
     for (const el of elements[group]) {
-      const css = toLocatorString(el.locatorData, 'selenium', 'java');
-      lines.push(`  @FindBy(css = "${css}")`, `  private WebElement ${el.name};`);
+      if (el.isListItem) {
+        const cssTemplate = toLocatorString(el.locatorData, 'selenium', 'java');
+        lines.push(`  public WebElement ${el.name}(int n) {`);
+        lines.push(`    return driver.findElement(By.cssSelector("${cssTemplate}"));`);
+        lines.push(`  }`);
+      } else {
+        const css = toLocatorString(el.locatorData, 'selenium', 'java');
+        lines.push(`  @FindBy(css = "${css}")`, `  private WebElement ${el.name};`);
+      }
     }
   }
   lines.push(

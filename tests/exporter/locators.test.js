@@ -72,6 +72,37 @@ describe('Cypress', () => {
   });
 });
 
+describe('toLocatorString — list item (container present)', () => {
+  const listLocator = { strategy: 'testid', value: 'delete-btn', container: 'tbody tr' };
+
+  test('playwright ts: nth chain', () => {
+    expect(toLocatorString(listLocator, 'playwright', 'ts'))
+      .toBe("page.locator('tbody tr').nth(n).getByTestId('delete-btn')");
+  });
+
+  test('playwright python: nth chain snake_case', () => {
+    expect(toLocatorString(listLocator, 'playwright', 'python'))
+      .toBe('page.locator("tbody tr").nth(n).get_by_test_id("delete-btn")');
+  });
+
+  test('cypress ts: eq().find()', () => {
+    expect(toLocatorString(listLocator, 'cypress', 'ts'))
+      .toBe("cy.get('tbody tr').eq(n).find('[data-testid=\"delete-btn\"]')");
+  });
+
+  test('selenium ts: nth-child css template literal', () => {
+    const result = toLocatorString(listLocator, 'selenium', 'ts');
+    expect(result).toContain('tbody tr:nth-child');
+    expect(result).toContain('[data-testid="delete-btn"]');
+  });
+
+  test('selenium python: f-string nth-child', () => {
+    const result = toLocatorString(listLocator, 'selenium', 'python');
+    expect(result).toContain('f\'tbody tr:nth-child({n+1})');
+    expect(result).toContain('[data-testid="delete-btn"]');
+  });
+});
+
 describe('Error handling', () => {
   test('throws on null locatorData', () => {
     expect(() => toLocatorString(null, 'playwright', 'ts')).toThrow('Invalid locatorData');

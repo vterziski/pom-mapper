@@ -1,4 +1,4 @@
-const { scanPage } = require('../src/scanner');
+const { scanPage, getListContext } = require('../src/scanner');
 
 function buildDOM(html) {
   document.body.innerHTML = html;
@@ -72,5 +72,75 @@ describe('scanPage', () => {
     buildDOM('<button data-testid="login-btn">Login</button>');
     const result = scanPage(document, 'python');
     expect(result.buttons[0].name).toBe('login_btn_button');
+  });
+
+  test('collapses repeated buttons in tbody rows into one parameterized entry', () => {
+    buildDOM(`
+      <table><tbody>
+        <tr><td><button data-testid="delete-btn">Delete</button></td></tr>
+        <tr><td><button data-testid="delete-btn">Delete</button></td></tr>
+        <tr><td><button data-testid="delete-btn">Delete</button></td></tr>
+      </tbody></table>
+    `);
+    const result = scanPage(document);
+    expect(result.buttons).toHaveLength(1);
+    expect(result.buttons[0].isListItem).toBe(true);
+    expect(result.buttons[0].locatorData.container).toBe('tbody tr');
+  });
+
+  test('collapses repeated buttons in ul li into one parameterized entry', () => {
+    buildDOM(`
+      <ul>
+        <li><button aria-label="Remove">x</button></li>
+        <li><button aria-label="Remove">x</button></li>
+      </ul>
+    `);
+    const result = scanPage(document);
+    expect(result.buttons).toHaveLength(1);
+    expect(result.buttons[0].isListItem).toBe(true);
+    expect(result.buttons[0].locatorData.container).toBe('ul li');
+  });
+
+  test('keeps distinct locator values in same list as separate parameterized entries', () => {
+    buildDOM(`
+      <table><tbody>
+        <tr><td><button data-testid="edit-btn">Edit</button><button data-testid="delete-btn">Delete</button></td></tr>
+        <tr><td><button data-testid="edit-btn">Edit</button><button data-testid="delete-btn">Delete</button></td></tr>
+      </tbody></table>
+    `);
+    const result = scanPage(document);
+    expect(result.buttons).toHaveLength(2);
+    expect(result.buttons.every(b => b.isListItem)).toBe(true);
+  });
+
+  test('non-list buttons are not marked as list items', () => {
+    buildDOM('<button data-testid="submit">Submit</button>');
+    const result = scanPage(document);
+    expect(result.buttons[0].isListItem).toBeUndefined();
+    expect(result.buttons[0].locatorData.container).toBeUndefined();
+  });
+});
+
+describe('getListContext', () => {
+  afterEach(() => { document.body.innerHTML = ''; });
+
+  test('returns row context for element inside tbody tr', () => {
+    document.body.innerHTML = '<table><tbody><tr><td><button id="b">X</button></td></tr></tbody></table>';
+    const el = document.getElementById('b');
+    const ctx = getListContext(el);
+    expect(ctx).toEqual({ container: 'tbody tr', prefix: 'row' });
+  });
+
+  test('returns item context for element inside ul li', () => {
+    document.body.innerHTML = '<ul><li><button id="b">X</button></li></ul>';
+    const el = document.getElementById('b');
+    const ctx = getListContext(el);
+    expect(ctx).toEqual({ container: 'ul li', prefix: 'item' });
+  });
+
+  test('returns null for element not inside a list', () => {
+    document.body.innerHTML = '<button id="b">X</button>';
+    const el = document.getElementById('b');
+    expect(getListContext(el)).toBeNull();
   });
 });

@@ -14,8 +14,13 @@ function generate(elements, className) {
   for (const group of GROUPS.filter(g => elements[g].length > 0)) {
     lines.push('', `    # ${LABELS[group]}`);
     for (const el of elements[group]) {
-      const loc = toLocatorString(el.locatorData, 'selenium', 'python').replace(/^driver\./, 'self.driver.');
-      lines.push(`    def ${el.name}(self):`, `        return ${loc}`);
+      if (el.isListItem) {
+        const loc = toLocatorString(el.locatorData, 'selenium', 'python').replace(/^driver\./, 'self.driver.');
+        lines.push(`    def ${el.name}(self, n):`, `        return ${loc}`);
+      } else {
+        const loc = toLocatorString(el.locatorData, 'selenium', 'python').replace(/^driver\./, 'self.driver.');
+        lines.push(`    def ${el.name}(self):`, `        return ${loc}`);
+      }
     }
   }
   return lines.join('\n');

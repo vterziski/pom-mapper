@@ -34,3 +34,18 @@ describe('playwright-ts template', () => {
     expect(out).not.toContain('// Links');
   });
 });
+
+test('generates parameterized method for list item', () => {
+  const elements = {
+    buttons: [{
+      name: 'rowDeleteButton',
+      locatorData: { strategy: 'testid', value: 'delete-btn', container: 'tbody tr' },
+      type: 'button',
+      isListItem: true,
+    }],
+    inputs: [], links: [], selects: [], textareas: [],
+  };
+  const output = generate(elements, 'UsersPage');
+  expect(output).toContain("rowDeleteButton = (n: number) =>");
+  expect(output).toContain("this.page.locator('tbody tr').nth(n).getByTestId('delete-btn')");
+});

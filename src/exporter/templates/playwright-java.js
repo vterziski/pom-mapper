@@ -15,8 +15,13 @@ function generate(elements, className) {
   for (const group of GROUPS.filter(g => elements[g].length > 0)) {
     lines.push('', `  // ${LABELS[group]}`);
     for (const el of elements[group]) {
-      const loc = toLocatorString(el.locatorData, 'playwright', 'java').replace(/^page\./, 'this.page.');
-      lines.push(`  public Locator ${el.name}() { return ${loc}; }`);
+      if (el.isListItem) {
+        const loc = toLocatorString(el.locatorData, 'playwright', 'java').replace(/^page\./, 'this.page.');
+        lines.push(`  public Locator ${el.name}(int n) { return ${loc}; }`);
+      } else {
+        const loc = toLocatorString(el.locatorData, 'playwright', 'java').replace(/^page\./, 'this.page.');
+        lines.push(`  public Locator ${el.name}() { return ${loc}; }`);
+      }
     }
   }
   lines.push('}');

@@ -48,15 +48,49 @@ function getLocatorData(el, type) {
   return null;
 }
 
+const LIST_CONTEXTS = [
+  { test: (el) => !!el.closest('tr') && !!el.closest('tbody'), container: 'tbody tr', prefix: 'row' },
+  { test: (el) => !!el.closest('tr'),                           container: 'tr',       prefix: 'row' },
+  { test: (el) => !!el.closest('[role="row"]'),                 container: '[role="row"]', prefix: 'row' },
+  { test: (el) => !!el.closest('ul') && !!el.closest('li'),    container: 'ul li',    prefix: 'item' },
+  { test: (el) => !!el.closest('ol') && !!el.closest('li'),    container: 'ol li',    prefix: 'item' },
+  { test: (el) => !!el.closest('li'),                          container: 'li',       prefix: 'item' },
+  { test: (el) => !!el.closest('[role="listitem"]'),           container: '[role="listitem"]', prefix: 'item' },
+];
+
+function getListContext(el) {
+  for (const ctx of LIST_CONTEXTS) {
+    if (ctx.test(el)) return { container: ctx.container, prefix: ctx.prefix };
+  }
+  return null;
+}
+
 function scanPage(language) {
   const seen = {};
+  const seenListLocators = new Set();
   const result = { inputs: [], buttons: [], links: [], selects: [], textareas: [] };
   for (const { selector, type, group } of QUERIES) {
     for (const el of Array.from(document.querySelectorAll(selector))) {
       const locatorData = getLocatorData(el, type);
       if (!locatorData) continue;
-      const name = toElementName(locatorData.rawName, type, seen, language);
-      result[group].push({ name, locatorData, type });
+
+      const listContext = getListContext(el);
+      if (listContext) {
+        const dedupeKey = `${listContext.container}::${locatorData.value}`;
+        if (seenListLocators.has(dedupeKey)) continue;
+        seenListLocators.add(dedupeKey);
+        const prefixedRaw = listContext.prefix + '-' + locatorData.rawName;
+        const name = toElementName(prefixedRaw, type, seen, language);
+        result[group].push({
+          name,
+          locatorData: { ...locatorData, container: listContext.container },
+          type,
+          isListItem: true,
+        });
+      } else {
+        const name = toElementName(locatorData.rawName, type, seen, language);
+        result[group].push({ name, locatorData, type });
+      }
     }
   }
   return result;
