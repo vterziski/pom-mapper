@@ -1,6 +1,6 @@
 # POM Mapper
 
-A Chrome extension that scans web pages and exports Page Object Model (POM) files ready to use in your test automation framework.
+A browser extension for Chrome and Firefox that scans web pages and exports Page Object Model (POM) files ready to use in your test automation framework.
 
 ## Features
 
@@ -25,17 +25,31 @@ Elements are identified using the following priority order:
 
 ## Installation
 
-### Chrome Web Store
+### Chrome
 
 Install directly from the [Chrome Web Store](https://chrome.google.com/webstore/detail/pom-mapper) — no setup required.
 
-### Manual install (developer mode)
+**Manual install (developer mode)**
 
 1. Clone or download this repository
 2. Open Chrome and navigate to `chrome://extensions`
 3. Enable **Developer mode** (top right toggle)
 4. Click **Load unpacked** and select the project folder
 5. The POM Mapper icon will appear in your toolbar
+
+### Firefox
+
+Install directly from [Firefox Add-ons (AMO)](https://addons.mozilla.org/firefox/addon/pom-mapper) — no setup required.
+
+**Manual install (developer mode)**
+
+1. Clone or download this repository
+2. Open Firefox and navigate to `about:debugging#/runtime/this-firefox`
+3. Click **Load Temporary Add-on**
+4. Navigate to the project folder and select `manifest.json`
+5. The POM Mapper icon will appear in your toolbar
+
+> Note: Temporary add-ons in Firefox are removed when the browser closes. For a permanent install use the Firefox Add-ons store link above.
 
 ## Usage
 
