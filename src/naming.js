@@ -34,7 +34,7 @@ function toElementName(rawName, type, seen, language = 'ts') {
   const suffix = TYPE_SUFFIXES[type] || '';
   const isPython = language === 'python';
   const base = isPython
-    ? toSnakeCase(rawName) + '_' + suffix.toLowerCase()
+    ? toSnakeCase(rawName) + (suffix ? '_' + suffix.toLowerCase() : '')
     : toCamelCase(rawName) + suffix;
 
   if (!seen[base]) {

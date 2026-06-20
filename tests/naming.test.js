@@ -1,4 +1,4 @@
-const { toElementName } = require('../src/naming');
+const { toElementName, toCamelCase, toSnakeCase } = require('../src/naming');
 
 describe('toElementName', () => {
   test('converts hyphenated data-testid to camelCase + type suffix', () => {
@@ -40,5 +40,35 @@ describe('toElementName', () => {
 
   test('Java camelCase output (same as default)', () => {
     expect(toElementName('login-submit', 'button', {}, 'java')).toBe('loginSubmitButton');
+  });
+});
+
+describe('toCamelCase', () => {
+  test('converts hyphenated string', () => {
+    expect(toCamelCase('login-submit')).toBe('loginSubmit');
+  });
+  test('converts space-separated string', () => {
+    expect(toCamelCase('Email address')).toBe('emailAddress');
+  });
+  test('converts underscore string', () => {
+    expect(toCamelCase('user_name')).toBe('userName');
+  });
+  test('strips non-alphanumeric', () => {
+    expect(toCamelCase('my-link!')).toBe('myLink');
+  });
+  test('handles empty string', () => {
+    expect(toCamelCase('')).toBe('');
+  });
+});
+
+describe('toSnakeCase', () => {
+  test('converts hyphenated string', () => {
+    expect(toSnakeCase('login-submit')).toBe('login_submit');
+  });
+  test('converts space-separated string', () => {
+    expect(toSnakeCase('Email address')).toBe('email_address');
+  });
+  test('handles empty string', () => {
+    expect(toSnakeCase('')).toBe('');
   });
 });
