@@ -90,8 +90,9 @@ function querySelectorAllDeep(selector, root) {
 function isSalesforcePage(doc) {
   return !!(
     doc.querySelector('lightning-input, lightning-button, lightning-combobox, lightning-textarea') ||
-    doc.querySelector('[data-component-id]') ||
-    doc.querySelector('.slds-scope')
+    doc.querySelector('[data-aura-rendered-by]') ||
+    doc.querySelector('.slds-scope') ||
+    doc.querySelector('body.sfdcBody')
   );
 }
 

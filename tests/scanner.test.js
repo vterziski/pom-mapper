@@ -134,6 +134,16 @@ describe('isSalesforcePage', () => {
     expect(isSalesforcePage(document)).toBe(true);
   });
 
+  test('detects data-aura-rendered-by', () => {
+    document.body.innerHTML = '<div data-aura-rendered-by="123:0"></div>';
+    expect(isSalesforcePage(document)).toBe(true);
+  });
+
+  test('does not trigger on generic data-component-id', () => {
+    document.body.innerHTML = '<div data-component-id="hero-banner"></div>';
+    expect(isSalesforcePage(document)).toBe(false);
+  });
+
   test('returns false for plain page', () => {
     document.body.innerHTML = '<button>Click</button>';
     expect(isSalesforcePage(document)).toBe(false);
