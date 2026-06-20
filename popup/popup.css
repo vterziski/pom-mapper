@@ -181,6 +181,7 @@ select:focus { outline: none; border-color: #4a90e2; }
 
 .sf-badge {
   display: inline-block;
+  margin-top: 8px;
   background: #f0a500;
   color: #fff;
   font-size: 11px;

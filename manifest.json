@@ -2,7 +2,8 @@
   "manifest_version": 3,
   "name": "POM Mapper",
   "version": "1.0.0",
-  "description": "Scan any page and export testable elements as a Page Object for Playwright, Selenium, or Cypress.",
+  "description": "Scan any web page and export Page Object Model files for Playwright, Selenium, or Cypress — in TypeScript, JavaScript, Java, or Python.",
+  "homepage_url": "https://github.com/vterziski/pom-mapper",
   "permissions": ["activeTab", "scripting", "storage"],
   "host_permissions": ["<all_urls>"],
   "action": {

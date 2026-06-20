@@ -1,0 +1,47 @@
+<svg width="440" height="280" viewBox="0 0 440 280" role="img" xmlns="http://www.w3.org/2000/svg">
+  <title>POM Mapper — Scan. Map. Export. Test.</title>
+  <desc>Chrome Web Store 440x280 promotional tile for POM Mapper</desc>
+
+  <rect width="440" height="280" fill="#1a1f2e" rx="0"/>
+
+  <line x1="0" y1="70" x2="440" y2="70" stroke="#ffffff" stroke-opacity="0.04" stroke-width="1"/>
+  <line x1="0" y1="140" x2="440" y2="140" stroke="#ffffff" stroke-opacity="0.04" stroke-width="1"/>
+  <line x1="0" y1="210" x2="440" y2="210" stroke="#ffffff" stroke-opacity="0.04" stroke-width="1"/>
+  <line x1="110" y1="0" x2="110" y2="280" stroke="#ffffff" stroke-opacity="0.04" stroke-width="1"/>
+  <line x1="220" y1="0" x2="220" y2="280" stroke="#ffffff" stroke-opacity="0.04" stroke-width="1"/>
+  <line x1="330" y1="0" x2="330" y2="280" stroke="#ffffff" stroke-opacity="0.04" stroke-width="1"/>
+
+  <g transform="translate(60, 55)">
+    <path d="M26 0 C11.64 0 0 11.64 0 26 C0 40 26 62 26 62 C26 62 52 40 52 26 C52 11.64 40.36 0 26 0 Z" fill="#4a90e2"/>
+    <circle cx="26" cy="26" r="11" fill="#1a1f2e"/>
+    <text x="26" y="31" font-family="monospace" font-size="12" font-weight="700" fill="#4a90e2" text-anchor="middle">&lt;/&gt;</text>
+  </g>
+
+  <text x="130" y="88" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="34" font-weight="700" fill="#ffffff" letter-spacing="-0.5">POM Mapper</text>
+  <text x="130" y="114" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="14" fill="#8899aa" letter-spacing="0.2">Scan. Map. Export. Test.</text>
+
+  <line x1="60" y1="142" x2="380" y2="142" stroke="#ffffff" stroke-opacity="0.1" stroke-width="1"/>
+
+  <rect x="60" y="158" width="100" height="28" rx="14" fill="#4a90e2" fill-opacity="0.15" stroke="#4a90e2" stroke-width="1" stroke-opacity="0.5"/>
+  <text x="110" y="177" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="12" fill="#4a90e2" text-anchor="middle" font-weight="500">Playwright</text>
+
+  <rect x="172" y="158" width="100" height="28" rx="14" fill="#4a90e2" fill-opacity="0.15" stroke="#4a90e2" stroke-width="1" stroke-opacity="0.5"/>
+  <text x="222" y="177" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="12" fill="#4a90e2" text-anchor="middle" font-weight="500">Selenium</text>
+
+  <rect x="284" y="158" width="96" height="28" rx="14" fill="#4a90e2" fill-opacity="0.15" stroke="#4a90e2" stroke-width="1" stroke-opacity="0.5"/>
+  <text x="332" y="177" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="12" fill="#4a90e2" text-anchor="middle" font-weight="500">Cypress</text>
+
+  <rect x="60" y="198" width="96" height="26" rx="13" fill="#ffffff" fill-opacity="0.06" stroke="#ffffff" stroke-width="0.5" stroke-opacity="0.2"/>
+  <text x="108" y="216" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="11" fill="#aabbcc" text-anchor="middle">TypeScript</text>
+
+  <rect x="166" y="198" width="96" height="26" rx="13" fill="#ffffff" fill-opacity="0.06" stroke="#ffffff" stroke-width="0.5" stroke-opacity="0.2"/>
+  <text x="214" y="216" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="11" fill="#aabbcc" text-anchor="middle">JavaScript</text>
+
+  <rect x="272" y="198" width="60" height="26" rx="13" fill="#ffffff" fill-opacity="0.06" stroke="#ffffff" stroke-width="0.5" stroke-opacity="0.2"/>
+  <text x="302" y="216" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="11" fill="#aabbcc" text-anchor="middle">Java</text>
+
+  <rect x="342" y="198" width="60" height="26" rx="13" fill="#ffffff" fill-opacity="0.06" stroke="#ffffff" stroke-width="0.5" stroke-opacity="0.2"/>
+  <text x="372" y="216" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="11" fill="#aabbcc" text-anchor="middle">Python</text>
+
+  <text x="220" y="258" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="12" fill="#556677" text-anchor="middle">Shadow DOM · AI self-healing · Salesforce ready</text>
+</svg>

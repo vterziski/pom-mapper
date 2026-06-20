@@ -133,21 +133,33 @@ function showState(name) {
   states[name].classList.remove('hidden');
 }
 
+// ---- Supported languages per framework ----
+const FRAMEWORK_LANGUAGES = {
+  playwright: ['ts', 'js', 'java', 'python'],
+  selenium:   ['ts', 'js', 'java', 'python'],
+  cypress:    ['ts', 'js'],
+};
+
+function applyLanguageOptions(framework) {
+  const supported = FRAMEWORK_LANGUAGES[framework] || ['ts', 'js'];
+  const langBtns = document.querySelectorAll('#language-selector .seg-btn');
+  langBtns.forEach(b => {
+    b.style.display = supported.includes(b.dataset.value) ? '' : 'none';
+  });
+  if (!supported.includes(selectedLanguage)) {
+    selectedLanguage = supported[0];
+    langBtns.forEach(b => b.classList.remove('active'));
+    document.querySelector(`#language-selector .seg-btn[data-value="${selectedLanguage}"]`).classList.add('active');
+  }
+}
+
 // ---- Framework / Language selectors ----
 document.querySelectorAll('#framework-selector .seg-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('#framework-selector .seg-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     selectedFramework = btn.dataset.value;
-    const isCypress = selectedFramework === 'cypress';
-    document.querySelectorAll('.java-python').forEach(b => {
-      b.style.display = isCypress ? 'none' : '';
-      if (isCypress && (selectedLanguage === 'java' || selectedLanguage === 'python')) {
-        selectedLanguage = 'ts';
-        document.querySelectorAll('#language-selector .seg-btn').forEach(b2 => b2.classList.remove('active'));
-        document.querySelector('#language-selector .seg-btn[data-value="ts"]').classList.add('active');
-      }
-    });
+    applyLanguageOptions(selectedFramework);
   });
 });
 
