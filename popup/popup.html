@@ -42,12 +42,10 @@
       <input type="checkbox" id="deep-scan-toggle" />
     </div>
 
-    <div id="usage-bar" class="usage-bar hidden"></div>
-    <div id="upgrade-nudge" class="upgrade-nudge hidden">
-      ⚠️ Almost at your 20 export limit. <a href="#" id="upgrade-link">Upgrade for $4/mo</a>
-    </div>
-
     <button id="btn-map" class="btn-primary">Map Page</button>
+    <div class="feedback-link">
+      <a id="btn-feedback" href="#">Report a bug · Suggest a feature</a>
+    </div>
   </div>
 
   <!-- State: Results -->
@@ -73,22 +71,12 @@
     <button id="btn-retry" class="btn-secondary">Try Again</button>
   </div>
 
-  <!-- State: Limit Reached -->
-  <div id="state-limit" class="hidden">
-    <p class="limit-msg">You've used all 20 free exports this month.</p>
-    <p class="limit-sub">Resets on the 1st of next month.</p>
-    <a id="upgrade-cta" href="#" class="btn-primary btn-upgrade">Upgrade — $4/month</a>
-    <button id="btn-limit-back" class="btn-secondary">Back</button>
-  </div>
-
   <!-- State: Settings -->
   <div id="state-settings" class="hidden">
     <div class="header">
       <h2>Settings</h2>
       <button id="btn-settings-back" class="icon-btn">✕</button>
     </div>
-
-    <div id="premium-status"></div>
 
     <label for="api-key">OpenAI / Anthropic API Key</label>
     <input type="password" id="api-key" placeholder="sk-... or sk-ant-..." />
@@ -104,7 +92,9 @@
     <input type="file" id="pomrc-upload" accept=".json" />
     <p class="hint">Enterprise: upload your framework template.</p>
 
-    <div id="settings-usage" class="usage-display"></div>
+    <div class="feedback-link">
+      <a id="btn-feedback-settings" href="#">Report a bug · Suggest a feature</a>
+    </div>
 
     <button id="btn-save-settings" class="btn-primary">Save</button>
   </div>

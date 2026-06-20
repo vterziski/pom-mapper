@@ -7,38 +7,44 @@ function toLocatorString(locatorData, framework, language) {
     if (language === 'python') {
       if (strategy === 'testid') return `page.get_by_test_id(${q(value)})`;
       if (strategy === 'label')  return `page.get_by_label(${q(value)})`;
+      if (strategy === 'title')  return `page.get_by_title(${q(value)})`;
       if (strategy === 'id')     return `page.locator(${q('#' + value)})`;
       if (strategy === 'name')   return `page.locator(${q('[name="' + value + '"]')})`;
       if (strategy === 'role')   return `page.get_by_role(${q(role)}, name=${q(value)})`;
     }
     if (strategy === 'testid') return `page.getByTestId(${q(value)})`;
     if (strategy === 'label')  return `page.getByLabel(${q(value)})`;
+    if (strategy === 'title')  return `page.getByTitle(${q(value)})`;
     if (strategy === 'id')     return `page.locator(${q('#' + value)})`;
     if (strategy === 'name')   return `page.locator(${q('[name="' + value + '"]')})`;
     if (strategy === 'role')   return `page.getByRole(${q(role)}, { name: ${q(value)} })`;
   }
   if (framework === 'selenium') {
     if (language === 'python') {
-      if (strategy === 'id')   return `driver.find_element(By.ID, ${q(value)})`;
-      if (strategy === 'name') return `driver.find_element(By.NAME, ${q(value)})`;
+      if (strategy === 'id')    return `driver.find_element(By.ID, ${q(value)})`;
+      if (strategy === 'name')  return `driver.find_element(By.NAME, ${q(value)})`;
+      if (strategy === 'title') return `driver.find_element(By.CSS_SELECTOR, '[title="${value}"]')`;
       const css = strategy === 'testid' ? `[data-testid="${value}"]` : strategy === 'label' ? `[aria-label="${value}"]` : `[role="${role}"]`;
       return `driver.find_element(By.CSS_SELECTOR, '${css}')`;
     }
     if (language === 'java') {
-      if (strategy === 'id')   return `#${value}`;
-      if (strategy === 'name') return `[name="${value}"]`;
+      if (strategy === 'id')     return `#${value}`;
+      if (strategy === 'name')   return `[name="${value}"]`;
+      if (strategy === 'title')  return `[title="${value}"]`;
       if (strategy === 'testid') return `[data-testid="${value}"]`;
       if (strategy === 'label')  return `[aria-label="${value}"]`;
       return `[role="${role}"]`;
     }
-    if (strategy === 'id')   return `driver.findElement(By.id(${q(value)}))`;
-    if (strategy === 'name') return `driver.findElement(By.name(${q(value)}))`;
+    if (strategy === 'id')    return `driver.findElement(By.id(${q(value)}))`;
+    if (strategy === 'name')  return `driver.findElement(By.name(${q(value)}))`;
+    if (strategy === 'title') return `driver.findElement(By.css(${q('[title="' + value + '"]')}))`;
     const css = strategy === 'testid' ? `[data-testid="${value}"]` : strategy === 'label' ? `[aria-label="${value}"]` : `[role="${role}"]`;
     return `driver.findElement(By.css(${q(css)}))`;
   }
   if (framework === 'cypress') {
-    if (strategy === 'id')   return `cy.get(${q('#' + value)})`;
-    if (strategy === 'name') return `cy.get(${q('[name="' + value + '"]')})`;
+    if (strategy === 'id')     return `cy.get(${q('#' + value)})`;
+    if (strategy === 'name')   return `cy.get(${q('[name="' + value + '"]')})`;
+    if (strategy === 'title')  return `cy.get(${q('[title="' + value + '"]')})`;
     if (strategy === 'testid') return `cy.get(${q('[data-testid="' + value + '"]')})`;
     if (strategy === 'label')  return `cy.get(${q('[aria-label="' + value + '"]')})`;
     return `cy.get(${q('[role="' + role + '"]')})`;
@@ -120,7 +126,7 @@ let deepScan = false;
 
 // ---- DOM refs ----
 const $ = (id) => document.getElementById(id);
-const states = { ready: $('state-ready'), results: $('state-results'), empty: $('state-empty'), limit: $('state-limit'), settings: $('state-settings') };
+const states = { ready: $('state-ready'), results: $('state-results'), empty: $('state-empty'), settings: $('state-settings') };
 
 function showState(name) {
   Object.values(states).forEach(s => s.classList.add('hidden'));
@@ -153,9 +159,7 @@ document.querySelectorAll('#language-selector .seg-btn').forEach(btn => {
   });
 });
 
-// ---- Usage helpers ----
-const FREE_LIMIT = 20;
-
+// ---- Storage helpers ----
 function getStorageData(keys) {
   return new Promise(resolve => chrome.storage.local.get(keys, resolve));
 }
@@ -164,43 +168,10 @@ function setStorageData(data) {
   return new Promise(resolve => chrome.storage.local.set(data, resolve));
 }
 
-function currentMonth() { return new Date().toISOString().slice(0, 7); }
-
-async function loadUsage() {
-  const { usage } = await getStorageData(['usage']);
-  const month = currentMonth();
-  if (!usage || usage.month !== month) return { count: 0, month };
-  return usage;
-}
-
-async function canExport() {
-  const { premiumToken } = await getStorageData(['premiumToken']);
-  if (premiumToken) return true;
-  const usage = await loadUsage();
-  return usage.count < FREE_LIMIT;
-}
-
-async function incrementUsage() {
-  const usage = await loadUsage();
-  await setStorageData({ usage: { count: usage.count + 1, month: usage.month } });
-}
-
-async function updateUsageBar() {
-  const { premiumToken } = await getStorageData(['premiumToken']);
-  const usageBar = $('usage-bar');
-  const upgradeNudge = $('upgrade-nudge');
-  if (premiumToken) { usageBar.classList.add('hidden'); upgradeNudge.classList.add('hidden'); return; }
-  const usage = await loadUsage();
-  usageBar.classList.remove('hidden');
-  usageBar.textContent = `${usage.count} / ${FREE_LIMIT} free exports used`;
-  if (usage.count >= 18) upgradeNudge.classList.remove('hidden');
-}
-
 // ---- Merge ----
 function mergeElements(existing, incoming) {
   const merged = { ...existing };
-  const groups = ['inputs','buttons','links','selects','textareas'];
-  for (const g of groups) {
+  for (const g of GROUPS) {
     const existingLocators = new Set(existing[g].map(e => e.locatorData.value));
     merged[g] = [...existing[g], ...(incoming[g] || []).filter(e => !existingLocators.has(e.locatorData.value))];
   }
@@ -208,12 +179,12 @@ function mergeElements(existing, incoming) {
 }
 
 function totalCount(elements) {
-  return ['inputs','buttons','links','selects','textareas'].reduce((sum, g) => sum + elements[g].length, 0);
+  return GROUPS.reduce((sum, g) => sum + elements[g].length, 0);
 }
 
 // ---- Render results ----
 function renderResults() {
-  const groups = ['inputs','buttons','links','selects','textareas'].filter(g => accumulated[g].length > 0);
+  const groups = GROUPS.filter(g => accumulated[g].length > 0);
   const list = $('elements-list');
   list.innerHTML = '';
   for (const group of groups) {
@@ -234,11 +205,6 @@ function renderResults() {
   $('export-label').textContent = `Exporting as: ${selectedFramework.charAt(0).toUpperCase() + selectedFramework.slice(1)} · ${selectedLanguage.toUpperCase()}`;
 }
 
-// ---- Deep scan toggle ----
-$('deep-scan-toggle').addEventListener('change', (e) => {
-  deepScan = e.target.checked;
-});
-
 // ---- Scan ----
 function runScan() {
   chrome.tabs.query({ active: true, currentWindow: true }, ([tab]) => {
@@ -255,9 +221,13 @@ function runScan() {
   });
 }
 
+// ---- Deep scan toggle ----
+$('deep-scan-toggle').addEventListener('change', (e) => {
+  deepScan = e.target.checked;
+});
+
 // ---- Export ----
-$('btn-export').addEventListener('click', async () => {
-  if (!await canExport()) { showState('limit'); return; }
+$('btn-export').addEventListener('click', () => {
   const className = $('class-name').value.trim() || 'PageObject';
   const content = generateFile(accumulated, className, selectedFramework, selectedLanguage);
   const filename = getFilename(className, selectedLanguage);
@@ -266,8 +236,6 @@ $('btn-export').addEventListener('click', async () => {
   const a = document.createElement('a');
   a.href = url; a.download = filename; a.click();
   URL.revokeObjectURL(url);
-  await incrementUsage();
-  await updateUsageBar();
 });
 
 // ---- AI Healing ----
@@ -280,9 +248,8 @@ $('btn-heal').addEventListener('click', async () => {
       chrome.tabs.sendMessage(tab.id, { action: 'SCAN_PAGE', language: selectedLanguage }, async (response) => {
         if (!response || !response.success) return;
         const newScan = response.data;
-        const groups = ['inputs','buttons','links','selects','textareas'];
-        const newLocators = new Set(groups.flatMap(g => newScan[g].map(e => e.locatorData.value)));
-        const missing = groups.flatMap(g => accumulated[g].filter(e => !newLocators.has(e.locatorData.value)));
+        const newLocators = new Set(GROUPS.flatMap(g => newScan[g].map(e => e.locatorData.value)));
+        const missing = GROUPS.flatMap(g => accumulated[g].filter(e => !newLocators.has(e.locatorData.value)));
 
         if (missing.length === 0) { alert('No broken locators found — all elements still present.'); return; }
 
@@ -315,16 +282,19 @@ Respond ONLY with JSON: {"strategy":"<strategy>","value":"<value>"} or with "rol
   });
 });
 
+// ---- Feedback ----
+function openFeedback() {
+  chrome.tabs.create({ url: 'https://github.com/vterziski/pom-mapper/issues/new' });
+}
+$('btn-feedback').addEventListener('click', (e) => { e.preventDefault(); openFeedback(); });
+$('btn-feedback-settings').addEventListener('click', (e) => { e.preventDefault(); openFeedback(); });
+
 // ---- Settings ----
 function openSettings() {
   previousTab = document.querySelector('[id^="state-"]:not(.hidden)')?.id?.replace('state-', '') || 'ready';
-  getStorageData(['apiKey', 'aiProvider', 'premiumToken', 'usage']).then(({ apiKey: key, aiProvider: provider, premiumToken, usage }) => {
+  getStorageData(['apiKey', 'aiProvider']).then(({ apiKey: key, aiProvider: provider }) => {
     if (key) $('api-key').value = key;
     if (provider) $('provider-select').value = provider;
-    $('premium-status').textContent = premiumToken ? '✓ Premium active' : '';
-    const month = currentMonth();
-    const count = (!usage || usage.month !== month) ? 0 : usage.count;
-    $('settings-usage').textContent = premiumToken ? 'Unlimited exports (Premium)' : `${count} / ${FREE_LIMIT} exports used this month`;
     showState('settings');
   });
 }
@@ -351,7 +321,6 @@ $('btn-save-settings').addEventListener('click', async () => {
 $('btn-map').addEventListener('click', runScan);
 $('btn-rescan').addEventListener('click', runScan);
 $('btn-retry').addEventListener('click', () => showState('ready'));
-$('btn-limit-back').addEventListener('click', () => showState('ready'));
 
 // ---- Init ----
 chrome.tabs.query({ active: true, currentWindow: true }, async ([tab]) => {
@@ -361,7 +330,6 @@ chrome.tabs.query({ active: true, currentWindow: true }, async ([tab]) => {
 
   const { apiKey: key } = await getStorageData(['apiKey']);
   if (key) $('btn-heal').classList.remove('hidden');
-  await updateUsageBar();
 
   chrome.scripting.executeScript({ target: { tabId: tab.id }, files: ['content/content.js'] }, () => {
     chrome.tabs.sendMessage(tab.id, { action: 'DETECT_SALESFORCE' }, (response) => {
