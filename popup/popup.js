@@ -347,6 +347,7 @@ chrome.tabs.query({ active: true, currentWindow: true }, async ([tab]) => {
     chrome.tabs.sendMessage(tab.id, { action: 'DETECT_SALESFORCE' }, (response) => {
       if (response && response.isSalesforce) {
         $('sf-badge').classList.remove('hidden');
+        $('deep-scan-row').classList.remove('hidden');
         $('deep-scan-toggle').checked = true;
         deepScan = true;
       }
