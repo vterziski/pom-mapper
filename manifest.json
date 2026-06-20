@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "POM Generator",
+  "name": "POM Mapper",
   "version": "1.0.0",
   "description": "Scan any page and export testable elements as a Page Object for Playwright, Selenium, or Cypress.",
   "permissions": ["activeTab", "scripting", "storage"],
