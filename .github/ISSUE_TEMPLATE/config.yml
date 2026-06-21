@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability
+    url: mailto:vane.terziski@gmail.com
+    about: Please report security vulnerabilities privately by email, not as a public issue.
+  - name: Question or discussion
+    url: https://github.com/vterziski/pom-mapper/discussions
+    about: For general questions and discussions, use GitHub Discussions.
