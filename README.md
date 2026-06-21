@@ -123,6 +123,12 @@ class LoginPage:
         return self.driver.find_element(By.CSS_SELECTOR, '[role="button"]')
 ```
 
+## Contributing
+
+Contributions are welcome — bug fixes, new framework/language support, and feature ideas.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines and dev setup instructions.
+To report a security issue, see [SECURITY.md](SECURITY.md).
+
 ## Feedback
 
 Found a bug or have a suggestion? [Open an issue on GitHub](https://github.com/vterziski/pom-mapper/issues/new).
