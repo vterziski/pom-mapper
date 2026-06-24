@@ -215,3 +215,16 @@ select:focus { outline: none; border-color: #4a90e2; }
 }
 
 .feedback-link a:hover { color: #4a90e2; text-decoration: underline; }
+
+.footer-sponsor {
+  text-align: center;
+  margin-top: 6px;
+}
+
+.footer-sponsor a {
+  font-size: 11px;
+  color: #e05d8a;
+  text-decoration: none;
+}
+
+.footer-sponsor a:hover { text-decoration: underline; }
