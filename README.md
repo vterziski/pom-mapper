@@ -27,7 +27,7 @@ Elements are identified using the following priority order:
 
 ### Chrome
 
-Install directly from the [Chrome Web Store](https://chrome.google.com/webstore/detail/pom-mapper) — no setup required.
+Install directly from the [Chrome Web Store](https://chromewebstore.google.com/detail/pom-mapper/hdjcdjdfeejjkhlnkpnimicoiffpchbp) — no setup required.
 
 **Manual install (developer mode)**
 
@@ -39,7 +39,7 @@ Install directly from the [Chrome Web Store](https://chrome.google.com/webstore/
 
 ### Firefox
 
-Install directly from [Firefox Add-ons (AMO)](https://addons.mozilla.org/firefox/addon/pom-mapper) — no setup required.
+Install directly from [Firefox Add-ons](https://addons.mozilla.org/en-US/firefox/addon/pom-mapper/) — no setup required.
 
 **Manual install (developer mode)**
 
@@ -122,6 +122,16 @@ class LoginPage:
     def sign_in_button(self):
         return self.driver.find_element(By.CSS_SELECTOR, '[role="button"]')
 ```
+
+## Sponsors
+
+If POM Mapper saves you time, consider supporting its development.
+
+[♥ Sponsor on GitHub](https://github.com/sponsors/vterziski)
+
+<!-- SPONSORS -->
+*No sponsors yet — be the first!*
+<!-- END SPONSORS -->
 
 ## Contributing
 
